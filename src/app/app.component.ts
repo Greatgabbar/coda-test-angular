@@ -141,6 +141,8 @@ export class AppComponent {
     data.item={
       id:0
     }
+    data.textButtonSave="Yes",
+    data.textButtonCancel="No"
     config.errorMessages = [
       { key: 'required', message: 'The "%label%" is required.' }
     ];
