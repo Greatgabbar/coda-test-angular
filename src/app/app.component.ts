@@ -16,20 +16,31 @@ export class AppComponent {
    }
 
   ngOnInit(): void {
+    console.log(this.mockData)
+    this.clientservice.getListofClients().subscribe(data=>{
+      console.log(data);
+      this.mockData=data.response;
+    })
     this.loadConfig()
   }
 
+
+  ngOnChanges(changes : any) {
+    console.log("Changes --> ", changes);
+  }
+
+  getlatestData():void{
+    this.clientservice.getListofClients().subscribe(data=>{
+      console.log(data);
+      this.mockData=data.response;
+      console.log(this.mockData)
+    })
+  }
+
   loadConfig() {
-    //this.tableConfig.service = this.testService;
+    this.tableConfig.service = this.clientservice;
     this.tableConfig.id = 'table-test';
     this.tableConfig.columns = [
-      // { key: 'user', type: 'user', title: 'Users', 
-      // extra: {
-      //   field_photo: 'photo', 
-      //   field_firstname: 'firstname', 
-      //   field_lastname: 'lastname',
-      // } },
-      // { key: 'photo', type: 'photo', title: 'Photu', field_key: 'photo'},
       { key: 'firstname', type: 'string', title: 'First Name', field_key: 'firstname'},
       { key: 'lastname', type: 'string', title: 'Last Name', field_key: 'lastname'},
       { key: 'email', type: 'string', title: 'Email', field_key: 'email'},
@@ -54,6 +65,18 @@ export class AppComponent {
           {
             // remove code here
             console.log(result);
+            this.clientservice.deleteClient(result.item).subscribe((data)=>{
+              // const updatedarr=this.mockData?.data?.filter((gg)=>gg.id!==result.item.id)
+              // console.log(updatedarr);
+              // const newObj:MiaPagination<any>={
+              //   ...this.mockData!,
+              //   data:updatedarr!
+              // }
+              // console.log(newObj);
+              // this.mockData=newObj
+              this.getlatestData();
+              console.log(this.mockData)
+            })
           }
           break;
         case 'edit':{
