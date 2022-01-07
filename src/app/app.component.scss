@@ -1,0 +1,17 @@
+.add {
+  width: 100%;
+  color: black;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add button {
+  border: 0px;
+  padding: 10px;
+  background-color: green;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+}

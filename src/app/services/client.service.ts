@@ -24,5 +24,9 @@ export class ClientService extends MiaBaseCrudHttpService<Client> {
   deleteClient(user : any){
     return this.http.delete(`${this.basePathUrl}/remove/${user.id}`)
   }
+
+  addClient(user:any){
+    return this.http.post(this.basePathUrl+"/save",{...user});
+  }
  
 }

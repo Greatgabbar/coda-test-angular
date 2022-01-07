@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { BaseColumnComponent, MiaColumn ,MiaTableConfig } from '@agencycoda/mia-table'
+import { MiaTableConfig } from '@agencycoda/mia-table'
+import { MatDialog } from '@angular/material/dialog';
+import { MiaFormConfig, MiaFormModalComponent, MiaFormModalConfig } from '@agencycoda/mia-form'
 import { MiaPagination, MiaQuery } from '@agencycoda/mia-core';
 import {ClientService} from './services/client.service'
+import {Client} from './entities/client'
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -11,7 +14,11 @@ export class AppComponent {
   title = 'coda-test-angular';
   tableConfig: MiaTableConfig = new MiaTableConfig();
   mockData?: MiaPagination<any>;
-  constructor(private clientservice : ClientService) {
+  item!:Client;
+  constructor(
+    private clientservice : ClientService,
+    protected dialog: MatDialog,
+    ) {
     
    }
 
@@ -82,6 +89,7 @@ export class AppComponent {
         case 'edit':{
           //Edit Code their 
           console.log("Edit ezz")
+          this.openModal(result.item);
         }
         break;
         default:
@@ -116,5 +124,69 @@ export class AppComponent {
         }
       ]
     };
-}
+  }
+  openModal(editData :any){
+      // console.log("new Modal will be Open")
+      // console.log("Edit Modal will be Open")
+
+      let data = new MiaFormModalConfig();
+      if(!editData){
+        data.item = new Client();
+      }else{
+        data.item=editData
+      }
+      data.titleNew = 'Add User';
+      let config = new MiaFormConfig();
+      config.hasSubmit = false;
+      config.fields = [
+        { key: 'firstname', type: 'string', label: 'FirstName' },
+        { key: 'lastname', type: 'string', label: 'LastName' },
+        { key: 'email', type: 'string', label: 'Email' },
+        { key: 'address', type: 'string', label: 'Address' },
+      ];
+      config.errorMessages = [
+        { key: 'required', message: 'The "%label%" is required.' }
+      ];
+      data.config = config;
+      let dialogRef= this.dialog.open(MiaFormModalComponent, {
+        width: '500px',
+        panelClass: 'modal-full-width-mobile',
+        data: data
+      })
+
+      // dialogRef.beforeClosed().subscribe(gg=>{
+      //   console.log(gg);
+      // })
+
+      dialogRef.afterClosed().subscribe((gg) => {
+        if(!gg) return;
+        console.log(gg);
+        if(!editData){
+          let lol={
+            "firstname": gg.firstname,
+            "lastname": gg.lastname,
+            "email": gg.email,
+            "address": gg.address,
+            "photo": "",
+            "caption": ""
+        }
+          this.clientservice.addClient(lol).subscribe(hehe=>{
+            console.log(hehe)
+          })
+        }else{
+          let lol={
+            "id":editData.id,
+            "firstname": gg.firstname,
+            "lastname": gg.lastname,
+            "email": gg.email,
+            "address": gg.address,
+            "photo": "",
+            "caption": ""
+        }
+          this.clientservice.addClient(lol).subscribe(hehe=>{
+            console.log(hehe)
+          })
+        }
+      })
+  }
 }
