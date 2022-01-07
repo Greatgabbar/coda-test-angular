@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MiaTableConfig } from '@agencycoda/mia-table'
 import { MatDialog } from '@angular/material/dialog';
-import { MiaFormConfig, MiaFormModalComponent, MiaFormModalConfig } from '@agencycoda/mia-form'
+import { MiaFormConfig, MiaField, MiaFormModalComponent, MiaFormModalConfig } from '@agencycoda/mia-form'
 import { MiaPagination, MiaQuery } from '@agencycoda/mia-core';
 import {ClientService} from './services/client.service'
 import {Client} from './entities/client'
@@ -72,18 +72,22 @@ export class AppComponent {
           {
             // remove code here
             console.log(result);
-            this.clientservice.deleteClient(result.item).subscribe((data)=>{
-              // const updatedarr=this.mockData?.data?.filter((gg)=>gg.id!==result.item.id)
-              // console.log(updatedarr);
-              // const newObj:MiaPagination<any>={
-              //   ...this.mockData!,
-              //   data:updatedarr!
-              // }
-              // console.log(newObj);
-              // this.mockData=newObj
-              this.getlatestData();
-              console.log(this.mockData)
-            })
+            this.openRemoveModal(result)
+//             this.clientservice.deleteClient(result.item).subscribe((data)=>{
+ 
+// // ************************************* State Updation code but not working :/ ******************************************
+
+//               // const updatedarr=this.mockData?.data?.filter((gg)=>gg.id!==result.item.id)
+//               // console.log(updatedarr);
+//               // const newObj:MiaPagination<any>={
+//               //   ...this.mockData!,
+//               //   data:updatedarr!
+//               // }
+//               // console.log(newObj);
+//               // this.mockData=newObj
+//               this.getlatestData();
+//               console.log(this.mockData)
+//             })
           }
           break;
         case 'edit':{
@@ -125,16 +129,56 @@ export class AppComponent {
       ]
     };
   }
-  openModal(editData :any){
-      // console.log("new Modal will be Open")
-      // console.log("Edit Modal will be Open")
 
+  openRemoveModal(result:any){
+    let data = new MiaFormModalConfig();
+    let config = new MiaFormConfig();
+    data.showHeader=true;
+    config.fields=[
+      { key: '', type: MiaField.TYPE_LABEL, label: '<p> Are You Sure you want to delete the Client Data ? </p>' },
+    ];
+    
+    data.item={
+      id:0
+    }
+    config.errorMessages = [
+      { key: 'required', message: 'The "%label%" is required.' }
+    ];
+    config.hasSubmit = false;
+
+    data.config = config;
+    this.dialog.open(MiaFormModalComponent, {
+      width: '500px',
+      panelClass: 'modal-full-width-mobile',
+      data: data
+    }).beforeClosed().subscribe(gg=>{
+      if(!gg) return;
+      this.clientservice.deleteClient(result.item).subscribe((data)=>{
+ 
+// ************************************* State Updation code but not working :/ ******************************************
+
+              // const updatedarr=this.mockData?.data?.filter((gg)=>gg.id!==result.item.id)
+              // console.log(updatedarr);
+              // const newObj:MiaPagination<any>={
+              //   ...this.mockData!,
+              //   data:updatedarr!
+              // }
+              // console.log(newObj);
+              // this.mockData=newObj
+              this.getlatestData();
+              console.log(this.mockData)
+            })
+    })
+  }
+
+  openModal(editData :any){
       let data = new MiaFormModalConfig();
       if(!editData){
         data.item = new Client();
       }else{
         data.item=editData
       }
+      // data.showHeader=false
       data.titleNew = 'Add User';
       let config = new MiaFormConfig();
       config.hasSubmit = false;
@@ -153,11 +197,6 @@ export class AppComponent {
         panelClass: 'modal-full-width-mobile',
         data: data
       })
-
-      // dialogRef.beforeClosed().subscribe(gg=>{
-      //   console.log(gg);
-      // })
-
       dialogRef.afterClosed().subscribe((gg) => {
         if(!gg) return;
         console.log(gg);
